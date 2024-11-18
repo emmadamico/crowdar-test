@@ -49,7 +49,7 @@ def driver(browser):
     driver.quit()
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item, call):
+def pytest_runtest_makereport(item):
     """
     Se ejecuta el reporte luego de cada test.
     Si el test falla, entonces se genera un screenshot y el mismo se guarda en la carpeta screenshots
@@ -63,9 +63,7 @@ def pytest_runtest_makereport(item, call):
             screenshots_dir = os.path.join(BASE_DIR, "screenshots")
             os.makedirs(screenshots_dir, exist_ok=True)
             timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            screenshot_file = os.path.join(screenshots_dir, f"{item.name}_{timestamp}.png")
-            driver.save_screenshot(screenshot_file)
-            if "pytest_html" in item.config.pluginmanager.plugins:
-                extra = getattr(report, "extra", [])
-                extra.append(pytest_html.extras.png(screenshot_file))
-                report.extra = extra
+            screenshot_name = f"{timestamp}.png"
+            screenshot_path = os.path.join(screenshots_dir, screenshot_name)
+            driver.save_screenshot(screenshot_path)
+            
